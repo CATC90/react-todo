@@ -1,23 +1,90 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import TodoList from "./components/todo-list";
+import TodoForm from "./components/todo-form";
+import Button from "@mui/material/Button";
+import CardActions from "@mui/material/CardActions";
 
 function App() {
+  const [completeToDos, setCompleteToDos] = useState([]);
+  const [incompleteToDos, setIncompleteToDos] = useState([]);
+  const [partialTodo, setPartialTodo] = useState({ task: "" });
+
+  const addToDo = () => {
+    if (!partialTodo.task) return;
+    setIncompleteToDos((incompleteToDos) => [
+      ...incompleteToDos,
+      { ...partialTodo, id: uuidv4(), complete: false },
+    ]);
+    setPartialTodo({ task: "" });
+  };
+
+  const onAddToDoChange = (toDo) => {
+    setPartialTodo(toDo);
+  };
+
+  const onCompleteToDo = (toDo) => {
+    setIncompleteToDos((incompleteToDos) =>
+      incompleteToDos.filter(({ id }) => id !== toDo.id)
+    );
+    setCompleteToDos((completeToDos) => [
+      ...completeToDos,
+      { ...toDo, complete: true },
+    ]);
+  };
+
+  const onIncompleteToDo = (toDo) => {
+    setCompleteToDos((completeToDos) =>
+      completeToDos.filter(({ id }) => id !== toDo.id)
+    );
+    setIncompleteToDos((incompleteToDos) => [
+      ...incompleteToDos,
+      { ...toDo, complete: false },
+    ]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="cards">
+      <div className="center">
+        <div className="wrapper">
+          <Card sx={{ minWidth: 275 }}>
+            <CardHeader title="To Do List" />
+            <CardContent>
+              {incompleteToDos.length ? (
+                <TodoList toDos={incompleteToDos} toDoChange={onCompleteToDo} />
+              ) : (
+                <h4>All Done!! 🏖</h4>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card sx={{ minWidth: 275 }}>
+            <CardHeader title="Add To Do" />
+            <CardContent>
+              <TodoForm
+                handleChange={onAddToDoChange}
+                partialToDo={partialTodo}
+              />
+            </CardContent>
+            <CardActions className="button-container">
+              <Button className="add-button" variant="text" onClick={addToDo}>
+                Add To Do
+              </Button>
+            </CardActions>
+          </Card>
+
+          <Card sx={{ minWidth: 275 }}>
+            <CardHeader title="Completed 🎉" />
+            <CardContent>
+              <TodoList toDos={completeToDos} toDoChange={onIncompleteToDo} />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
