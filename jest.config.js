@@ -1,4 +1,3 @@
-/* CONFIG FROM : https://nextjs.org/docs/testing */
 module.exports = {
   collectCoverageFrom: ["src/**/*.{js,jsx,ts,tsx}"],
   coverageThreshold: {
@@ -26,7 +25,7 @@ module.exports = {
     "^@ui/(.*)$": "<rootDir>/src/ui/$1",
     "^@domain/(.*)$": "<rootDir>/src/domain/$1",
   },
-  testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/cypress/"],
+  testPathIgnorePatterns: ["<rootDir>/node_modules/"],
   testEnvironment: "jsdom",
   transformIgnorePatterns: [
     "/node_modules/",
