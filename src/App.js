@@ -9,7 +9,7 @@ import TodoForm from "./components/todo-form";
 import Button from "@mui/material/Button";
 import CardActions from "@mui/material/CardActions";
 
-function App() {
+function App({ http }) {
   const [completeToDos, setCompleteToDos] = useState([]);
   const [incompleteToDos, setIncompleteToDos] = useState([]);
   const [partialTodo, setPartialTodo] = useState({ task: "" });
@@ -47,6 +47,20 @@ function App() {
     ]);
   };
 
+  const deleteToDo = async (toDo) => {
+    try {
+      await http.delete(toDo);
+      setCompleteToDos((completeToDos) =>
+        completeToDos.filter(({ id }) => id !== toDo.id)
+      );
+      setIncompleteToDos((incompleteToDos) =>
+        incompleteToDos.filter(({ id }) => id !== toDo.id)
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="cards">
       <div className="center">
@@ -55,7 +69,11 @@ function App() {
             <CardHeader title="To Do List" />
             <CardContent>
               {incompleteToDos.length ? (
-                <TodoList toDos={incompleteToDos} toDoChange={onCompleteToDo} />
+                <TodoList
+                  toDos={incompleteToDos}
+                  toDoChange={onCompleteToDo}
+                  deleteToDo={deleteToDo}
+                />
               ) : (
                 <h4>All Done!! 🏖</h4>
               )}
@@ -71,7 +89,12 @@ function App() {
               />
             </CardContent>
             <CardActions className="button-container">
-              <Button className="add-button" variant="text" onClick={addToDo}>
+              <Button
+                data-testid="add-todo"
+                className="add-button"
+                variant="text"
+                onClick={addToDo}
+              >
                 Add To Do
               </Button>
             </CardActions>
@@ -80,7 +103,11 @@ function App() {
           <Card sx={{ minWidth: 275 }}>
             <CardHeader title="Completed 🎉" />
             <CardContent>
-              <TodoList toDos={completeToDos} toDoChange={onIncompleteToDo} />
+              <TodoList
+                toDos={completeToDos}
+                toDoChange={onIncompleteToDo}
+                deleteToDo={deleteToDo}
+              />
             </CardContent>
           </Card>
         </div>
